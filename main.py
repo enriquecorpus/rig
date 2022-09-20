@@ -22,6 +22,7 @@ class RandomPeople():
             "name" : self.name,
             "gender": self.gender,
             "dob" : self.dob,
+            "photo": self.random_photo()
         }
 
     def generate_information(self):
@@ -29,6 +30,7 @@ class RandomPeople():
         self.name = data["name"]
         self.gender = data["gender"]
         self.dob = self.random_birthday()
+        self.photo = self.random_photo()
 
     def random_birthday(self):
         end = datetime.datetime.now()
@@ -36,6 +38,21 @@ class RandomPeople():
         return (start + datetime.timedelta(
             seconds=random.randint(0, int((end - start).total_seconds())),
         )).strftime("%m/%d/%Y")
+
+    @property
+    def humanize_gender(self):
+        return "woman" if self.gender == "f" else "man"
+    def random_photo(self):
+        # of images to download. ("tall, square, wide, panoramic")
+        import pdb
+        pdb.set_trace()
+        arguments = {"keywords": "face of a {}".format(self.gender),
+                    "format": "jpg",
+                    "limit":4,
+                    "print_urls":True,
+                    "size": "medium",
+                    "aspect_ratio":"panoramic"}
+        x = response.download(arguments)
 
 
     
