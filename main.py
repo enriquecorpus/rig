@@ -9,4 +9,4 @@ async def root():
 
 @app.get("/hi")
 async def root():
-    return {"message": "Hi World"}  
+    return {"message": "Hi World!"}  
