@@ -36,7 +36,7 @@ class RandomPeople:
     def __init__(self):
         self.generate_information()
 
-    def to_json(self):
+    def to_obj(self):
         return json.dumps(self.__dict__)
 
     def generate_information(self):
@@ -64,13 +64,10 @@ class RandomPeople:
         output_dir = Path(str(self.id)).absolute()
         if not Path.is_dir(output_dir):
             Path.mkdir(output_dir, parents=True)
-        img_downloader = utils.image.ImageDownloader(query="{}, face of a {} age of {}".format(self.name, self.humanize_gender, self.age),
-                               limit=1, output_dir=output_dir, adult="on", timeout=60, verbose=True)
-        img_downloader.run()
-        file = os.listdir(output_dir)[0]
-        with open(Path(output_dir).joinpath(file).absolute(), "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        return encoded_string.decode("utf-8")
+        img_downloader = utils.image.ImageDownloader(
+            query="{}, face of a {} age of {}".format(self.name, self.humanize_gender, self.age),
+            limit=1, output_dir=output_dir, adult="on", timeout=60, verbose=True)
+        return img_downloader.get_result_as_base64()
 
 
 app = FastAPI()
@@ -79,7 +76,7 @@ app = FastAPI()
 @app.get("/")
 async def root():
     random_people = RandomPeople()
-    return {"data": random_people.to_json()}
+    return {"data": json.loads(random_people.to_obj())}
 
 
 @app.get("/hi")
