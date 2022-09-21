@@ -61,7 +61,7 @@ class RandomPeople:
         return "woman" if self.gender == "f" else "man"
 
     def random_photo(self):
-        output_dir = Path(str(self.id)).absolute()
+        output_dir = Path("downloads/{}".format(str(self.id))).absolute()
         if not Path.is_dir(output_dir):
             Path.mkdir(output_dir, parents=True)
         img_downloader = utils.image.ImageDownloader(

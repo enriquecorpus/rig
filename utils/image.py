@@ -2,6 +2,7 @@ from bing_image_downloader.bing import Bing
 from pathlib import Path
 import os
 import base64
+import shutil
 
 
 class ImageDownloader(Bing):
@@ -12,8 +13,12 @@ class ImageDownloader(Bing):
         return ret
 
     def get_result_as_base64(self):
-        self.run()
-        file = os.listdir(self.output_dir)[0]
-        with open(Path(self.output_dir).joinpath(file).absolute(), "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        return encoded_string.decode("utf-8")
+        try:
+            self.run()
+            file = os.listdir(self.output_dir)[0]
+            with open(Path(self.output_dir).joinpath(file).absolute(), "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read())
+            shutil.rmtree(self.output_dir)
+            return encoded_string.decode("utf-8")
+        except Exception as e:
+            return ""
