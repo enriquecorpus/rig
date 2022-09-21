@@ -6,6 +6,7 @@ import uuid
 import base64
 import os
 import utils.image
+import json
 from pathlib import Path
 
 DATASET = {}
@@ -36,13 +37,7 @@ class RandomPeople:
         self.generate_information()
 
     def to_json(self):
-        return {
-            "name": self.name,
-            "gender": self.gender,
-            "dob": self.dob,
-            "age": self.age,
-            "photo": self.photo
-        }
+        return json.dumps(self.__dict__)
 
     def generate_information(self):
         data = DATASET[random.randrange(0, len(DATASET))]
