@@ -5,18 +5,23 @@ import datetime
 import uuid
 import base64
 import os
+import utils.image
 from pathlib import Path
-from bing_image_downloader import bing as b
+
+DATASET = {}
 
 
-reader = csv.reader(open('names.csv', 'r'))
-dataset = {}
-for i, row in enumerate(reader):
-    name, gender, _, _ = row
-    dataset[i] = {
-        "name": name,
-        "gender": gender,
-    }
+def load_data():
+    reader = csv.reader(open('names.csv', 'r'))
+    for i, row in enumerate(reader):
+        name, gender, _, _ = row
+        DATASET[i] = {
+            "name": name,
+            "gender": gender,
+        }
+
+
+load_data()
 
 
 class RandomPeople:
@@ -40,7 +45,7 @@ class RandomPeople:
         }
 
     def generate_information(self):
-        data = dataset[random.randrange(0, len(dataset))]
+        data = DATASET[random.randrange(0, len(DATASET))]
         dob = self.random_birthday()
         self.id = str(uuid.uuid4())
         self.name = data["name"]
@@ -64,24 +69,24 @@ class RandomPeople:
         output_dir = Path(str(self.id)).absolute()
         if not Path.is_dir(output_dir):
             Path.mkdir(output_dir, parents=True)
-        bing = b.Bing(query="face of a {} age of {}".format(self.humanize_gender, self.age),
-                      limit=1, output_dir=output_dir, adult="on", timeout=60,filter="imagesize-small")
-        bing.run()
+        img_downloader = utils.image.ImageDownloader(query="{}, face of a {} age of {}".format(self.name, self.humanize_gender, self.age),
+                               limit=1, output_dir=output_dir, adult="on", timeout=60, verbose=True)
+        img_downloader.run()
         file = os.listdir(output_dir)[0]
         with open(Path(output_dir).joinpath(file).absolute(), "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
         return encoded_string.decode("utf-8")
 
 
-
-
 app = FastAPI()
+
 
 @app.get("/")
 async def root():
     random_people = RandomPeople()
     return {"data": random_people.to_json()}
 
+
 @app.get("/hi")
 async def root():
-    return {"message": "Hi World!"}  
+    return {"message": "Hi World!"}
