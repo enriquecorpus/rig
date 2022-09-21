@@ -3,8 +3,6 @@ import csv
 import random
 import datetime
 import uuid
-import base64
-import os
 import utils.image
 import json
 from pathlib import Path
